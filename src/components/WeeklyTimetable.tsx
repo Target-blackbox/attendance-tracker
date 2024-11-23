@@ -42,13 +42,13 @@ export function WeeklyTimetable({ subjects }: WeeklyTimetableProps) {
   };
 
   return (
-    <div className="overflow-x-auto rounded-lg shadow">
-      <table className="min-w-full bg-white">
+    <div className="overflow-x-auto rounded-lg shadow max-w-4xl mx-auto">
+      <table className="w-full bg-white text-sm">
         <thead>
           <tr>
-            <th className="sticky left-0 bg-gray-100 px-4 py-3 border-b font-semibold text-gray-900">Days</th>
+            <th className="sticky left-0 bg-gray-100 p-2 border-b font-semibold text-gray-900 text-xs">Days</th>
             {TIME_SLOTS.map(({ time }) => (
-              <th key={time} className="px-4 py-3 border-b font-semibold text-gray-900 whitespace-nowrap">
+              <th key={time} className="p-2 border-b font-semibold text-gray-900 whitespace-nowrap text-xs">
                 {time}
               </th>
             ))}
@@ -57,7 +57,7 @@ export function WeeklyTimetable({ subjects }: WeeklyTimetableProps) {
         <tbody>
           {DAYS.map(day => (
             <tr key={day} className="hover:bg-gray-50">
-              <td className="sticky left-0 bg-gray-100 px-4 py-3 border-b font-medium text-gray-900 whitespace-nowrap">
+              <td className="sticky left-0 bg-gray-100 p-2 border-b font-medium text-gray-900 whitespace-nowrap text-xs">
                 {day}
               </td>
               {TIME_SLOTS.map(({ time }) => {
@@ -67,31 +67,31 @@ export function WeeklyTimetable({ subjects }: WeeklyTimetableProps) {
                 return (
                   <td 
                     key={`${day}-${time}`} 
-                    className={`px-4 py-3 border-b text-center ${subject?.color || ''}`}
+                    className={`p-2 border-b text-center ${subject?.color || ''}`}
                   >
                     {subject && (
                       <div className="flex flex-col items-center group relative">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium text-gray-900">
+                        <div className="flex items-center gap-1">
+                          <span className="font-medium text-gray-900 text-xs">
                             {subject.name}
                           </span>
                           <button
                             onClick={() => toggleStar(subject.id, day, time)}
-                            className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:scale-110"
+                            className="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                             aria-label={isStarred ? "Unstar class" : "Star class"}
                           >
                             {isStarred ? (
-                              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                              <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
                             ) : (
-                              <StarOff className="w-4 h-4 text-gray-400" />
+                              <StarOff className="w-3 h-3 text-gray-400" />
                             )}
                           </button>
                         </div>
-                        <span className="text-xs text-gray-600">
+                        <span className="text-[10px] text-gray-600">
                           {subject.code}
                         </span>
                         {isStarred && (
-                          <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full" />
+                          <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-yellow-400 rounded-full" />
                         )}
                       </div>
                     )}
