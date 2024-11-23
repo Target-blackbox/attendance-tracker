@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { Star, StarOff } from 'lucide-react';
 import { DAYS, TIME_SLOTS } from '../data/timetable';
-import { Subject, StarredSubjects } from '../types';
+import { Subject, StarredSlot } from '../types';
 
 interface WeeklyTimetableProps {
   subjects: Subject[];
 }
 
 export function WeeklyTimetable({ subjects }: WeeklyTimetableProps) {
-  const [starredSubjects, setStarredSubjects] = useState<StarredSubjects>({});
+  const [starredSlots, setStarredSlots] = useState<StarredSlot[]>([]);
 
   const getSubjectForSlot = (day: string, time: string) => {
     return subjects.find(subject =>
@@ -16,11 +16,29 @@ export function WeeklyTimetable({ subjects }: WeeklyTimetableProps) {
     );
   };
 
-  const toggleStar = (subjectId: string) => {
-    setStarredSubjects(prev => ({
-      ...prev,
-      [subjectId]: !prev[subjectId]
-    }));
+  const isSlotStarred = (subjectId: string, day: string, time: string) => {
+    return starredSlots.some(
+      slot => 
+        slot.subjectId === subjectId && 
+        slot.day === day && 
+        slot.time === time
+    );
+  };
+
+  const toggleStar = (subjectId: string, day: string, time: string) => {
+    setStarredSlots(prev => {
+      const isCurrentlyStarred = isSlotStarred(subjectId, day, time);
+      if (isCurrentlyStarred) {
+        return prev.filter(
+          slot => 
+            !(slot.subjectId === subjectId && 
+              slot.day === day && 
+              slot.time === time)
+        );
+      } else {
+        return [...prev, { subjectId, day, time }];
+      }
+    });
   };
 
   return (
@@ -44,6 +62,8 @@ export function WeeklyTimetable({ subjects }: WeeklyTimetableProps) {
               </td>
               {TIME_SLOTS.map(({ time }) => {
                 const subject = getSubjectForSlot(day, time);
+                const isStarred = subject ? isSlotStarred(subject.id, day, time) : false;
+
                 return (
                   <td 
                     key={`${day}-${time}`} 
@@ -56,11 +76,11 @@ export function WeeklyTimetable({ subjects }: WeeklyTimetableProps) {
                             {subject.name}
                           </span>
                           <button
-                            onClick={() => toggleStar(subject.id)}
+                            onClick={() => toggleStar(subject.id, day, time)}
                             className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:scale-110"
-                            aria-label={starredSubjects[subject.id] ? "Unstar subject" : "Star subject"}
+                            aria-label={isStarred ? "Unstar class" : "Star class"}
                           >
-                            {starredSubjects[subject.id] ? (
+                            {isStarred ? (
                               <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                             ) : (
                               <StarOff className="w-4 h-4 text-gray-400" />
@@ -70,7 +90,7 @@ export function WeeklyTimetable({ subjects }: WeeklyTimetableProps) {
                         <span className="text-xs text-gray-600">
                           {subject.code}
                         </span>
-                        {starredSubjects[subject.id] && (
+                        {isStarred && (
                           <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full" />
                         )}
                       </div>
