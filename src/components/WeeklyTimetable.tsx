@@ -1,16 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Star, StarOff } from 'lucide-react';
 import { DAYS, TIME_SLOTS } from '../data/timetable';
-import { Subject } from '../types';
+import { Subject, StarredSubjects } from '../types';
 
 interface WeeklyTimetableProps {
   subjects: Subject[];
 }
 
 export function WeeklyTimetable({ subjects }: WeeklyTimetableProps) {
+  const [starredSubjects, setStarredSubjects] = useState<StarredSubjects>({});
+
   const getSubjectForSlot = (day: string, time: string) => {
     return subjects.find(subject =>
       subject.slots.some(slot => slot.day === day && slot.time === time)
     );
+  };
+
+  const toggleStar = (subjectId: string) => {
+    setStarredSubjects(prev => ({
+      ...prev,
+      [subjectId]: !prev[subjectId]
+    }));
   };
 
   return (
@@ -40,13 +50,29 @@ export function WeeklyTimetable({ subjects }: WeeklyTimetableProps) {
                     className={`px-4 py-3 border-b text-center ${subject?.color || ''}`}
                   >
                     {subject && (
-                      <div className="flex flex-col items-center">
-                        <span className="font-medium text-gray-900">
-                          {subject.name}
-                        </span>
+                      <div className="flex flex-col items-center group relative">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-gray-900">
+                            {subject.name}
+                          </span>
+                          <button
+                            onClick={() => toggleStar(subject.id)}
+                            className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:scale-110"
+                            aria-label={starredSubjects[subject.id] ? "Unstar subject" : "Star subject"}
+                          >
+                            {starredSubjects[subject.id] ? (
+                              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                            ) : (
+                              <StarOff className="w-4 h-4 text-gray-400" />
+                            )}
+                          </button>
+                        </div>
                         <span className="text-xs text-gray-600">
                           {subject.code}
                         </span>
+                        {starredSubjects[subject.id] && (
+                          <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full" />
+                        )}
                       </div>
                     )}
                   </td>
